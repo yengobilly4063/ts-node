@@ -3,6 +3,7 @@ import loggerMiddleware from "./middlewares/logger";
 import dotenv from "dotenv";
 import validateEnv from "./utils/validateEnv";
 import initializeDatabaseConnection from "./db";
+import IController from "./interfaces/controller.interface";
 
 class App {
   private app: Application;
@@ -23,7 +24,7 @@ class App {
     this.app.use(express.urlencoded({ extended: false }));
   }
 
-  private initializeControllers(controllers: any[]) {
+  private initializeControllers(controllers: IController[]) {
     controllers.forEach((controller) => {
       this.app.use("/", controller.router);
     });

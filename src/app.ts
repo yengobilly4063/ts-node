@@ -1,5 +1,8 @@
 import express, { Application } from "express";
 import loggerMiddleware from "./middlewares/logger";
+import dotenv from "dotenv";
+import validateEnv from "./utils/validateEnv";
+import initializeDatabaseConnection from "./db";
 
 class App {
   private app: Application;
@@ -8,6 +11,7 @@ class App {
   constructor(controllers: any[], port: number = 5000) {
     this.app = express();
     this.port = port;
+    this.initializeEnv();
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
   }
@@ -25,12 +29,23 @@ class App {
     });
   }
 
+  private initializeEnv() {
+    dotenv.config();
+    validateEnv();
+  }
+
   public listen() {
-    this.app.listen(this.port, () => {
-      console.log(
-        `[Server]: Server is running at http://localhost:${this.port}`
-      );
-    });
+    initializeDatabaseConnection()
+      .then(() => {
+        this.app.listen(this.port, () => {
+          console.log(
+            `[Server]: Server is running at http://localhost:${this.port}`
+          );
+        });
+      })
+      .catch((error) => {
+        console.log(`Error: ${error.message}`);
+      });
   }
 }
 

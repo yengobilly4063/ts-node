@@ -1,6 +1,6 @@
 import PostController from "./post.controller";
 
-// Initialize controllers
+// Initialize all available controllers controllers
 const postController = new PostController();
 
 // Add controllers to the list of controllers

@@ -1,10 +1,7 @@
-import dotenv from "dotenv";
 import App from "./app";
 import controllers from "./controllers";
+import _env from "./env";
 
-dotenv.config();
-const port = parseInt(process.env.PORT as string) || 3000;
-
-const app = new App(controllers, port);
+const app = new App(controllers, _env.PORT);
 
 app.listen();

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import validateEnv from "./utils/validateEnv";
 import initializeDatabaseConnection from "./db";
 import IController from "./interfaces/controller.interface";
+import errorMiddleware from "./middlewares/error.middleware";
 
 class App {
   private app: Application;
@@ -15,6 +16,7 @@ class App {
     this.initializeEnv();
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
+    this.initializeErrorHandling();
   }
 
   // Initialize all needed and global middlewares here
@@ -28,6 +30,10 @@ class App {
     controllers.forEach((controller) => {
       this.app.use("/", controller.router);
     });
+  }
+
+  private initializeErrorHandling() {
+    this.app.use(errorMiddleware);
   }
 
   private initializeEnv() {

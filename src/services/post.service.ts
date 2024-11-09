@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import PostModel from "../db/models/post.model";
 import IPost from "../interfaces/post.interface";
+import PostNotFoundException from "../exceptions/PostNotFoundException";
 
 export async function createPost(request: Request, response: Response) {
   const postData: IPost = request.body;
@@ -13,14 +14,26 @@ export async function getAllPosts(_: Request, response: Response) {
   response.send(posts);
 }
 
-export async function getPostById(request: Request, response: Response) {
+export async function getPostById(
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
   const { id } = request.params;
   const foundPost = await PostModel.findById(id);
+
+  if (!foundPost) {
+    return next(new PostNotFoundException(id));
+  }
 
   response.send(foundPost);
 }
 
-export async function modifyPost(request: Request, response: Response) {
+export async function modifyPost(
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
   const { id } = request.params;
   const postData: IPost = request.body;
 
@@ -28,16 +41,23 @@ export async function modifyPost(request: Request, response: Response) {
     new: true,
   });
 
+  if (!savedPost) {
+    return next(new PostNotFoundException(id));
+  }
+
   response.send(savedPost);
 }
 
-export async function deletePost(request: Request, response: Response) {
+export async function deletePost(
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
   const { id } = request.params;
   const successResponse = await PostModel.findByIdAndDelete(id);
 
   if (!successResponse) {
-    response.status(404).send({ msg: `Cound not delete post with id ${id}` });
-    return;
+    return next(new PostNotFoundException(id));
   }
 
   response.status(200).send({ msg: `Post deleted successfully` });

@@ -9,6 +9,9 @@
     "strict": true /* Enable all strict type-checking options. */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "baseUrl": "./src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
     "paths": {
       // "@utils/*": ["src/utils/*"]
     } /* Add aliases her based on the baseUrl excluding /src if included in baseUrl */

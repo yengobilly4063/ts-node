@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import App from "./app";
 import controllers from "./controllers";
 import _env from "./env";

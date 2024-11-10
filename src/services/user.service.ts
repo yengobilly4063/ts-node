@@ -4,9 +4,14 @@ import { CreateUserDto, UserLoginDto } from "../dtos/users.dto";
 import UserModel from "../db/models/user.model";
 import UserWithEmailAlreadyExistsException from "../exceptions/UserWithEmailAlreadyExistsException";
 import WrongUserCredentialsException from "../exceptions/WrongUserCredentialsException";
+import JwtTokenService from "./jwtToken.service";
+import createAuthCookie from "../utils/createAuthCookie";
+import IUser from "../interfaces/user.interface";
 
 class UserService {
   private userModel = UserModel;
+  private jwtTokenService = new JwtTokenService();
+  private createAuthCookie = createAuthCookie;
 
   public registerUser = async (
     request: Request,
@@ -30,6 +35,8 @@ class UserService {
     });
 
     user.password = "";
+
+    this.createAndSetAuthCookieHeader(user, response);
     response.send(user);
   };
 
@@ -55,8 +62,14 @@ class UserService {
     }
 
     user.password = "";
+    this.createAndSetAuthCookieHeader(user, response);
     response.send(user);
   };
+
+  private createAndSetAuthCookieHeader(user: IUser, response: Response) {
+    const tokenData = this.jwtTokenService.createToken(user);
+    response.setHeader("Set-Cookie", [this.createAuthCookie(tokenData)]);
+  }
 }
 
 export default UserService;

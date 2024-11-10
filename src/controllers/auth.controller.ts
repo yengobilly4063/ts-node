@@ -27,3 +27,5 @@ class AuthenticationController implements IController {
     );
   }
 }
+
+export default AuthenticationController;

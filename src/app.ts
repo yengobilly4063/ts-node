@@ -1,10 +1,13 @@
-import express, { Application } from "express";
+import express, { Application, Request, Response, NextFunction } from "express";
 import loggerMiddleware from "./middlewares/logger";
 import dotenv from "dotenv";
 import validateEnv from "./utils/validateEnv";
 import initializeDatabaseConnection from "./db";
 import IController from "./interfaces/controller.interface";
-import errorMiddleware from "./middlewares/error.middleware";
+import {
+  errorMiddleware,
+  notFoundMiddleware,
+} from "./middlewares/error.middleware";
 
 class App {
   private app: Application;
@@ -33,6 +36,7 @@ class App {
   }
 
   private initializeErrorHandling() {
+    this.app.use(notFoundMiddleware);
     this.app.use(errorMiddleware);
   }
 

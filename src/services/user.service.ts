@@ -5,19 +5,13 @@ import UserModel from "../db/models/user.model";
 import UserWithEmailAlreadyExistsException from "../exceptions/UserWithEmailAlreadyExistsException";
 import WrongUserCredentialsException from "../exceptions/WrongUserCredentialsException";
 import JwtTokenService from "./jwtToken.service";
-import createAuthCookie from "../utils/createAuthCookie";
 import IUser from "../interfaces/user.interface";
 
 class UserService {
   private userModel = UserModel;
   private jwtTokenService = new JwtTokenService();
-  private createAuthCookie = createAuthCookie;
 
-  public registerUser = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
+  public registerUser = async (request: Request, response: Response, next: NextFunction) => {
     const userData: CreateUserDto = request.body;
 
     const registeredUser = await this.userModel.findOne({
@@ -36,15 +30,11 @@ class UserService {
 
     user.password = "";
 
-    this.createAndSetAuthCookieHeader(user, response);
+    this.createAndSetAuthCookie(user, response);
     response.send(user);
   };
 
-  public logInUser = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
+  public logInUser = async (request: Request, response: Response, next: NextFunction) => {
     const userLoginData: UserLoginDto = request.body;
     const user = await this.userModel.findOne({ email: userLoginData.email });
 
@@ -52,23 +42,26 @@ class UserService {
       return next(new WrongUserCredentialsException());
     }
 
-    const isPasswordMatching = await bcrypt.compare(
-      userLoginData.password,
-      user.password
-    );
+    const isPasswordMatching = await bcrypt.compare(userLoginData.password, user.password);
 
     if (!isPasswordMatching) {
       return next(new WrongUserCredentialsException());
     }
 
     user.password = "";
-    this.createAndSetAuthCookieHeader(user, response);
+    this.createAndSetAuthCookie(user, response);
     response.send(user);
   };
 
-  private createAndSetAuthCookieHeader(user: IUser, response: Response) {
+  public loggingOut = (request: Request, response: Response, next: NextFunction) => {
+    response.clearCookie("Authorization");
+    response.sendStatus(200);
+  };
+
+  private createAndSetAuthCookie(user: IUser, response: Response) {
     const tokenData = this.jwtTokenService.createToken(user);
-    response.setHeader("Set-Cookie", [this.createAuthCookie(tokenData)]);
+
+    response.cookie("Authorization", tokenData);
   }
 }
 

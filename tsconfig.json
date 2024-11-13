@@ -17,5 +17,6 @@
     } /* Add aliases her based on the baseUrl excluding /src if included in baseUrl */
   },
   "include": ["/src/**/*.ts"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "exclude": ["node_modules", "**/*.spec.ts"],
+  "files": ["src/types.d.ts"]
 }

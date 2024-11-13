@@ -1,13 +1,11 @@
-import express, { Application, Request, Response, NextFunction } from "express";
+import express, { Application } from "express";
+import cookieParser from "cookie-parser";
 import loggerMiddleware from "./middlewares/logger";
 import dotenv from "dotenv";
 import validateEnv from "./utils/validateEnv";
 import initializeDatabaseConnection from "./db";
 import IController from "./interfaces/controller.interface";
-import {
-  errorMiddleware,
-  notFoundMiddleware,
-} from "./middlewares/error.middleware";
+import { errorMiddleware, notFoundMiddleware } from "./middlewares/error.middleware";
 
 class App {
   private app: Application;
@@ -27,6 +25,7 @@ class App {
     this.app.use(loggerMiddleware);
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
+    this.app.use(cookieParser());
   }
 
   private initializeControllers(controllers: IController[]) {
@@ -49,9 +48,7 @@ class App {
     initializeDatabaseConnection()
       .then(() => {
         this.app.listen(this.port, () => {
-          console.log(
-            `[Server]: Server is running at http://localhost:${this.port}`
-          );
+          console.log(`[Server]: Server is running at http://localhost:${this.port}`);
         });
       })
       .catch((error) => {

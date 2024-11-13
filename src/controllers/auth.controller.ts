@@ -14,17 +14,9 @@ class AuthenticationController implements IController {
   }
 
   private initializeRoutes() {
-    this.router.post(
-      `${this.path}/register`,
-      validationMiddleware(CreateUserDto),
-      this.userService.registerUser
-    );
-
-    this.router.post(
-      `${this.path}/login`,
-      validationMiddleware(UserLoginDto),
-      this.userService.logInUser
-    );
+    this.router.post(`${this.path}/logout`, this.userService.loggingOut);
+    this.router.post(`${this.path}/register`, validationMiddleware(CreateUserDto), this.userService.registerUser);
+    this.router.post(`${this.path}/login`, validationMiddleware(UserLoginDto), this.userService.logInUser);
   }
 }
 

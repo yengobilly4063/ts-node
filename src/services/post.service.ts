@@ -2,10 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import PostModel from "../db/models/post.model";
 import IPost from "../interfaces/post.interface";
 import PostNotFoundException from "../exceptions/PostNotFoundException";
+import RequestWithUser from "../interfaces/requestWithUser.interface";
 
-export async function createPost(request: Request, response: Response) {
+export async function createPost(request: RequestWithUser, response: Response) {
   const postData: IPost = request.body;
-  const createdPost = await new PostModel(postData).save();
+  const createdPost = await new PostModel({ ...postData, authorId: request.user._id }).save();
   response.send(createdPost);
 }
 
@@ -14,11 +15,7 @@ export async function getAllPosts(_: Request, response: Response) {
   response.send(posts);
 }
 
-export async function getPostById(
-  request: Request,
-  response: Response,
-  next: NextFunction
-) {
+export async function getPostById(request: Request, response: Response, next: NextFunction) {
   const { id } = request.params;
   const foundPost = await PostModel.findById(id);
 
@@ -29,11 +26,7 @@ export async function getPostById(
   response.send(foundPost);
 }
 
-export async function modifyPost(
-  request: Request,
-  response: Response,
-  next: NextFunction
-) {
+export async function modifyPost(request: Request, response: Response, next: NextFunction) {
   const { id } = request.params;
   const postData: IPost = request.body;
 
@@ -48,11 +41,7 @@ export async function modifyPost(
   response.send(savedPost);
 }
 
-export async function deletePost(
-  request: Request,
-  response: Response,
-  next: NextFunction
-) {
+export async function deletePost(request: Request, response: Response, next: NextFunction) {
   const { id } = request.params;
   const successResponse = await PostModel.findByIdAndDelete(id);
 

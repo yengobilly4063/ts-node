@@ -20,7 +20,7 @@ class PostController implements IController {
     // apply authMiddleware to route chanin handlers
     this.router
       .all(`${this.path}/*`, authMiddleware)
-      .post(`${this.path}`, validationMiddleware(CreatePostDto), createPost)
+      .post(`${this.path}`, validationMiddleware(CreatePostDto, true), createPost)
       .patch(`${this.path}/:id`, validationMiddleware(CreatePostDto, true), modifyPost)
       .delete(`${this.path}/:id`, deletePost);
   }
